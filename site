@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Testnet DApp Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.min.js"></script>
+</head>
+<body>
+    <h1>Exclusive Airdrop on Testnet</h1>
+    <p>Connect your wallet and claim your free tokens on the testnet!</p>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="claimAirdrop" style="display:none;">Claim Airdrop</button>
+
+    <script>
+        let provider;
+        let signer;
+        let contract;
+        const contractAddress = "YOUR_CONTRACT_ADDRESS_ON_TESTNET"; // Substitua pelo endereço de contrato na testnet
+        const contractABI = []; // Substitua pela ABI do seu contrato
+
+        document.getElementById('connectWallet').addEventListener('click', async () => {
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                document.getElementById('claimAirdrop').style.display = 'block';
+            } else {
+                console.error('Please install MetaMask!');
+            }
+        });
+
+        document.getElementById('claimAirdrop').addEventListener('click', async () => {
+            try {
+                // Suponha que esta seja a função do seu contrato para reivindicar o airdrop
+                const tx = await contract.claimTokens(); // Certifique-se de que esta função existe no seu contrato
+                await tx.wait();
+                alert('Airdrop claimed on Testnet!');
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
