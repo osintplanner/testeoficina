@@ -8,25 +8,26 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.min.js"></script>
 </head>
 <body>
-    <!-- Botão que o usuário pode clicar para conectar ao MetaMask -->
+    <!-- Botões para interação com o MetaMask e o contrato -->
     <button id="connect-button">Conectar ao MetaMask</button>
+    <button id="deposit-button" disabled>Depositar 1 WEI</button>
 
     <!-- O script irá interagir com o MetaMask e ethers.js -->
     <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-        // Seleciona o botão pelo ID
         const connectButton = document.getElementById('connect-button');
+        const depositButton = document.getElementById('deposit-button');
 
-        // Adiciona um evento de clique ao botão
+        let provider;
+        let signer;
+        let contract;
+
         connectButton.addEventListener('click', async () => {
-            // Verifica se o MetaMask está instalado
             if (window.ethereum) {
                 try {
-                    // Solicita a conta do usuário através do MetaMask
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    // Cria uma nova instância do provider do ethers.js
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    // Você deve substituir 'YOUR_CONTRACT_ABI' pela ABI real do seu contrato
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
                     const contractABI = [
 	{
 		"anonymous": false,
@@ -129,15 +130,14 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]; // Substitua isso pela sua ABI real
-                    // O endereço do contrato que você forneceu
+];
                     const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE";
-                    // Cria uma instância do contrato
-                    const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
+                    contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-                    // A partir daqui, você pode fazer chamadas para o contrato, por exemplo:
-                    // const value = await contract.someFunction();
-                    // console.log(value);
+                    // Habilita o botão de depósito após a conexão
+                    depositButton.disabled = false;
+
+                    console.log(`Conectado com a conta: ${accounts[0]}`);
                 } catch (error) {
                     console.error('Erro ao conectar ao MetaMask:', error);
                 }
@@ -146,7 +146,19 @@
             }
         });
 
-        // Outras funções que você queira executar após o carregamento do DOM...
+        depositButton.addEventListener('click', async () => {
+            if (contract) {
+                try {
+                    // Cria a transação com 1 WEI e chama a função deposit
+                    const tx = await contract.deposit({ value: 1 }); // 1 WEI
+                    console.log('Depósito realizado:', tx);
+                } catch (error) {
+                    console.error('Erro ao depositar:', error);
+                }
+            } else {
+                console.log('Contrato não está conectado.');
+            }
+        });
     });
     </script>
 </body>
