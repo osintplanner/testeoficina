@@ -114,46 +114,46 @@ html
 		],
 		"stateMutability": "view",
 		"type": "function"
-	}
-];
+	}];
 
-      // Defina o endereço do contrato
-      const enderecoContrato = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; // Substitua pelo endereço do contrato correto
+     // Defina o endereço do contrato
+        const enderecoContrato = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; // Substitua pelo endereço do contrato correto
 
-      // Função para conectar a wallet
-      async function conectarWallet() {
-        if (window.ethereum) {
-          try {
-            await window.ethereum.enable();
-            console.log("Wallet conectada!");
-          } catch (error) {
-            console.error("Erro ao conectar a wallet:", error);
-          }
-        } else {
-          console.error("Nenhuma wallet encontrada.");
+        // Função para conectar a wallet
+        async function conectarWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    console.log("Wallet conectada!");
+                } catch (error) {
+                    console.error("Erro ao conectar a wallet:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
         }
-      }
 
-      // Função para criar uma transação
-      async function criarTransacao() {
-        if (window.ethereum) {
-          try {
-            const web3 = new Web3(window.ethereum);
-            const accounts = await web3.eth.getAccounts();
-            const contrato = new web3.eth.Contract(abi, enderecoContrato);
+        // Função para criar uma transação
+        async function criarTransacao() {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
 
-            const resultado = await contrato.methods
-              .metodoContrato(parametro1, parametro2) // Substitua pelo nome do método e os parâmetros corretos
-              .send({ from: accounts[0] });
+                    // Chama o método deposit do contrato
+                    const resultado = await contrato.methods
+                        .deposit()
+                        .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") }); // Envia 0.01 ether
 
-            console.log("Transação criada:", resultado);
-          } catch (error) {
-            console.error("Erro ao criar a transação:", error);
-          }
-        } else {
-          console.error("Nenhuma wallet encontrada.");
+                    console.log("Transação criada:", resultado);
+                } catch (error) {
+                    console.error("Erro ao criar a transação:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
         }
-      }
     </script>
-  </body>
+</body>
 </html>
