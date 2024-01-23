@@ -16,7 +16,7 @@
         let signer;
         let contract;
         const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; // Substitua pelo endereço de contrato na testnet
-        const contractABI = []; // [
+        const contractABI = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -118,7 +118,7 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+]; // 
 
         document.getElementById('connectWallet').addEventListener('click', async () => {
             if (window.ethereum) {
