@@ -118,17 +118,24 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]; // 
+]; 
 
         document.getElementById('connectWallet').addEventListener('click', async () => {
-            if (window.ethereum) {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
-                contract = new ethers.Contract(contractAddress, contractABI, signer);
-                document.getElementById('claimAirdrop').style.display = 'block';
-            } else {
-                console.error('Please install MetaMask!');
+            try {
+                if (window.ethereum) {
+                    console.log('Connecting to MetaMask...');
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = provider.getSigner();
+                    console.log('Signer:', signer);
+                    contract = new ethers.Contract(contractAddress, contractABI, signer);
+                    console.log('Contract:', contract);
+                    document.getElementById('claimAirdrop').style.display = 'block';
+                } else {
+                    throw new Error('MetaMask not available.');
+                }
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
             }
         });
 
