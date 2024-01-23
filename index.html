@@ -14,21 +14,14 @@
 
     <!-- O script irá interagir com o MetaMask e ethers.js -->
     <script>
+    let provider;
+    let signer;
+    let contract;
+
     document.addEventListener('DOMContentLoaded', (event) => {
         const connectButton = document.getElementById('connect-button');
         const depositButton = document.getElementById('deposit-button');
-
-        let provider;
-        let signer;
-        let contract;
-
-        connectButton.addEventListener('click', async () => {
-            if (window.ethereum) {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    signer = provider.getSigner();
-                    const contractABI = [
+        const contractABI = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -131,7 +124,14 @@
 		"type": "function"
 	}
 ];
-                    const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE";
+        const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE";
+
+        connectButton.addEventListener('click', async () => {
+            if (typeof window.ethers !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
                     contract = new ethers.Contract(contractAddress, contractABI, signer);
 
                     // Habilita o botão de depósito após a conexão
