@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Testnet DApp Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexão com Contrato Inteligente</title>
+    <!-- Carrega ethers.js do CDN -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.min.js"></script>
 </head>
 <body>
-    <h1>Exclusive Airdrop on Testnet</h1>
-    <p>Connect your wallet and claim your free tokens on the testnet!</p>
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="claimAirdrop" style="display:none;">Claim Airdrop</button>
+    <!-- Botão que o usuário pode clicar para conectar ao MetaMask -->
+    <button id="connect-button">Conectar ao MetaMask</button>
 
+    <!-- O script irá interagir com o MetaMask e ethers.js -->
     <script>
-        let provider;
-        let signer;
-        let contract;
-        const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; // Substitua pelo endereço de contrato na testnet
-        const contractABI = [
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Seleciona o botão pelo ID
+        const connectButton = document.getElementById('connect-button');
+
+        // Adiciona um evento de clique ao botão
+        connectButton.addEventListener('click', async () => {
+            // Verifica se o MetaMask está instalado
+            if (window.ethereum) {
+                try {
+                    // Solicita a conta do usuário através do MetaMask
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    // Cria uma nova instância do provider do ethers.js
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    // Você deve substituir 'YOUR_CONTRACT_ABI' pela ABI real do seu contrato
+                    const contractABI = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -118,37 +129,25 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]; 
+]; // Substitua isso pela sua ABI real
+                    // O endereço do contrato que você forneceu
+                    const contractAddress = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE";
+                    // Cria uma instância do contrato
+                    const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
 
-        document.getElementById('connectWallet').addEventListener('click', async () => {
-            try {
-                if (window.ethereum) {
-                    console.log('Connecting to MetaMask...');
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    signer = provider.getSigner();
-                    console.log('Signer:', signer);
-                    contract = new ethers.Contract(contractAddress, contractABI, signer);
-                    console.log('Contract:', contract);
-                    document.getElementById('claimAirdrop').style.display = 'block';
-                } else {
-                    throw new Error('MetaMask not available.');
+                    // A partir daqui, você pode fazer chamadas para o contrato, por exemplo:
+                    // const value = await contract.someFunction();
+                    // console.log(value);
+                } catch (error) {
+                    console.error('Erro ao conectar ao MetaMask:', error);
                 }
-            } catch (error) {
-                console.error('Error connecting to MetaMask:', error);
+            } else {
+                console.log('Por favor, instale o MetaMask!');
             }
         });
 
-        document.getElementById('claimAirdrop').addEventListener('click', async () => {
-            try {
-                // Suponha que esta seja a função do seu contrato para reivindicar o airdrop
-                const tx = await contract.claimTokens(); // Certifique-se de que esta função existe no seu contrato
-                await tx.wait();
-                alert('Airdrop claimed on Testnet!');
-            } catch (error) {
-                console.error(error);
-            }
-        });
+        // Outras funções que você queira executar após o carregamento do DOM...
+    });
     </script>
 </body>
 </html>
