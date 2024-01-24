@@ -14,20 +14,17 @@
     <script>
         let signer;
 
-        // Função para conectar a wallet
-        async function connectWallet() {
+         // Função para conectar a wallet
+        async function conectarWallet() {
             if (window.ethereum) {
                 try {
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    signer = provider.getSigner();
-                    document.getElementById('approveContract').style.display = 'block';
-                    console.log('Wallet conectada!');
+                    console.log("Wallet conectada!");
                 } catch (error) {
-                    console.error('Erro ao conectar a wallet:', error);
+                    console.error("Erro ao conectar a wallet:", error);
                 }
             } else {
-                console.log('MetaMask não encontrado. Por favor, instale o MetaMask.');
+                console.error("Nenhuma wallet encontrada.");
             }
         }
 
