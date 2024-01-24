@@ -55,7 +55,31 @@
             var imagemLogo = document.getElementById('logoImage');
             imagemLogo.style.width = 50 + 'px'; // Define a largura da imagem
         }
-    </script>
+    }
+
+        .ascii-art {
+            white-space: pre; /* Mantém os espaços e quebras de linha da arte ASCII */
+            line-height: 1; /* Ajusta o espaço entre linhas para a arte ASCII */
+            font-size: 14px; /* Ou qualquer outro tamanho que você prefira */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <pre class="ascii-art">
+H   H  EEEE  L      L       OOO   W   W  OOO  RRRR  L      DDDD  !
+H   H  E     L      L      O   O  W   W O   O R   R L      D   D !
+HHHHH  EEEE  L      L      O   O  W W W O   O RRRR  L      D   D !
+H   H  E     L      L      O   O   W W  O   O R  R  L      D   D  
+H   H  EEEE  LLLLL  LLLLL   OOO     W    OOO  R   R LLLLL  DDDD  O
+        </pre>
+        <h1>Contrato Inteligente</h1>
+        <button onclick="conectarWallet()">Conectar Wallet</button>
+        <button onclick="criarTransacao()">Criar Transação</button>
+        <button onclick="receberAtivos()">Receber Ativos</button>
+    </div>
+
+	    </script>
 	  <body>
     <script>
       // Defina a ABI do contrato
