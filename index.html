@@ -4,28 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workshop de Segurança</title>
-    <!-- Vamos tentar carregar o ethers.js de uma fonte diferente -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.8/ethers.min.js" integrity="sha512-C4Vqh6pTQ0Fa2Pv3PqkzQ4xRrC9AWv5Jz2pS9RnbcvU4s9KdT69zTd7LH0R/S8hOx5xv0Ow/xfGJhjIj7XPowA==" crossorigin="anonymous"></script>
 </head>
 <body>
     <h1>Demonstração de Segurança de Smart Contract</h1>
     <button id="connectWallet">Conectar Wallet</button>
     <button id="approveContract" style="display:none;">Aprovar Contrato</button>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.8/ethers.min.js"></script>
     <script>
         let signer;
-
-        window.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            document.getElementById('approveContract').addEventListener('click', approveContract);
-            console.log('DOM completamente carregado e analisado');
-        });
 
         // Função para conectar a wallet
         async function connectWallet() {
             if (window.ethereum) {
                 try {
-                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     signer = provider.getSigner();
                     document.getElementById('approveContract').style.display = 'block';
@@ -34,7 +27,7 @@
                     console.error('Erro ao conectar a wallet:', error);
                 }
             } else {
-                console.error('MetaMask não encontrado. Por favor, instale o MetaMask.');
+                console.log('MetaMask não encontrado. Por favor, instale o MetaMask.');
             }
         }
 
@@ -62,6 +55,9 @@
                 console.error('Falha ao aprovar contrato:', error);
             }
         }
+
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('approveContract').addEventListener('click', approveContract);
     </script>
 </body>
 </html>
