@@ -10,9 +10,14 @@
     <button id="connectWallet">Conectar Wallet</button>
     <button id="approveContract" style="display:none;">Aprovar Contrato</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.8/ethers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.8/dist/ethers.min.js"></script>
     <script>
         let signer;
+
+        function init() {
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('approveContract').addEventListener('click', approveContract);
+        }
 
         // Função para conectar a wallet
         async function connectWallet() {
@@ -27,7 +32,7 @@
                     console.error('Erro ao conectar a wallet:', error);
                 }
             } else {
-                console.log('MetaMask não encontrado. Por favor, instale o MetaMask.');
+                console.error('MetaMask não encontrado. Por favor, instale o MetaMask.');
             }
         }
 
@@ -56,8 +61,11 @@
             }
         }
 
-        document.getElementById('connectWallet').addEventListener('click', connectWallet);
-        document.getElementById('approveContract').addEventListener('click', approveContract);
+        // Aguardar o carregamento completo do DOM
+        window.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM completamente carregado e analisado');
+            init();
+        });
     </script>
 </body>
 </html>
