@@ -10,17 +10,25 @@
     <button id="connectWallet">Conectar Wallet</button>
     <button id="approveContract" style="display:none;">Aprovar Contrato</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.2.6/dist/ethers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.8/ethers.min.js"></script>
     <script>
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
         let signer;
 
         // Função para conectar a wallet
         async function connectWallet() {
-            await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            document.getElementById('approveContract').style.display = 'block';
-            console.log('Wallet conectada!');
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    document.getElementById('approveContract').style.display = 'block';
+                    console.log('Wallet conectada!');
+                } catch (error) {
+                    console.error('Erro ao conectar a wallet:', error);
+                }
+            } else {
+                console.log('MetaMask não encontrado. Por favor, instale o MetaMask.');
+            }
         }
 
         // Função que interage com o contrato malicioso
