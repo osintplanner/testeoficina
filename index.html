@@ -3,6 +3,29 @@
     <title>1º Congresso Jurídico Internacional</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.4.0/dist/web3.min.js"></script>
 <style>
+        /* Estilos para centralizar o conteúdo na página */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Estilos adicionais para os botões */
+        button {
+            color: black;
+            margin: 5px;
+        }
+
+        .container {
+            text-align: center;
+        }
+    </style>
+	  <style>
         /* Muda a cor de fundo do corpo para preto */
         body {
             background-color: black;
@@ -15,11 +38,14 @@
     </style>
 </head>
   <body>
+<div class="container">
     <h1>1º Congresso Jurídico Internacional</h1>
 
-<button onclick="conectarWallet()">Conectar Wallet</button>
-<button onclick="criarTransacao()">Receber Ativos</button>
-
+	<button onclick="conectarWallet()">Conectar Wallet</button>
+	<button onclick="criarTransacao()">Trasdferir</button>
+	<button onclick="receberAtivos()">Receber Ativos</button> <!-- Novo botão -->
+</div>
+	  <body>
     <script>
       // Defina a ABI do contrato
       const abi = [
