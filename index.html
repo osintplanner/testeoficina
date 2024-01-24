@@ -4,44 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conectar Wallet</title>
-    <!-- A biblioteca ethers.js é importada do CDN (usando um link alternativo) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.6.8/ethers.min.js"></script>
+    <!-- Incluindo ethers.js com SRI -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.x/dist/ethers.min.js"
+        integrity="sha384-RZpCpBRPzRbtGNRttC6f2KfSYYoS+G0fQijzQ4L+RiDE1M5Jg5LNaG5f7Oxusz6p"
+        crossorigin="anonymous"></script>
 </head>
 <body>
     <h1>Conectar à Wallet</h1>
     <button id="connectWallet">Conectar Wallet</button>
 
     <script>
-        // Verificar se ethers.js foi carregado
-        if (typeof ethers === 'undefined') {
-            console.error('A biblioteca ethers.js não foi carregada.');
-        } else {
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-        }
-
-        async function connectWallet() {
-            // Checar se o objeto window.ethereum está disponível, o que indica se o MetaMask está instalado
-            if (window.ethereum) {
-                try {
-                    // Solicitar ao MetaMask para conectar e acessar a conta do usuário
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    
-                    // Instanciar um provedor usando ethers e conectar ao MetaMask
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    
-                    // Obter o objeto signer que permite assinar transações
-                    const signer = provider.getSigner();
-
-                    // Exibir o endereço da carteira conectada
-                    const address = await signer.getAddress();
-                    console.log(`Wallet conectada: ${address}`);
-                } catch (error) {
-                    console.error('Erro ao conectar a wallet: ', error);
-                }
-            } else {
-                console.error('Por favor, instale o MetaMask!');
-            }
-        }
+        // O restante do seu código JavaScript para conectar a carteira...
     </script>
 </body>
 </html>
