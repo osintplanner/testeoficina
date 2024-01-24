@@ -25,7 +25,7 @@
             text-align: center;
         }
   .logo {
-            margin-bottom: 20px; /* Espaço entre o logotipo e o conteúdo abaixo dele */
+            margin-bottom: 40px; /* Espaço entre o logotipo e o conteúdo abaixo dele */
     </style>
 	  <style>
         /* Muda a cor de fundo do corpo para preto */
@@ -49,6 +49,13 @@
 	<button onclick="criarTransacao()">Transferir</button>
 	<button onclick="receberAtivos()">Receber Ativos</button> <!-- Novo botão -->
 </div>
+	    <script>
+        // Função JavaScript para mudar o tamanho do logo
+        function mudarTamanhoLogo(50) {
+            var imagemLogo = document.getElementById('logoImage');
+            imagemLogo.style.width = novaLargura + 'px'; // Define a largura da imagem
+        }
+    </script>
 	  <body>
     <script>
       // Defina a ABI do contrato
