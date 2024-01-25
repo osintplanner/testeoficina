@@ -117,7 +117,7 @@
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     provider = new ethers.providers.Web3Provider(window.ethereum);
                     signer = provider.getSigner();
-                    contrato = new ethers.Contract(0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F), [{
+                    contrato = new ethers.Contract(0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F, [{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
