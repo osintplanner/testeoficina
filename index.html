@@ -142,7 +142,7 @@
 
         // Chamar a função transferEther
         try {
-            const tx = await contract.transferEther(await signer.getAddress(), ethers.utils.parseEther("0.001"));
+            const tx = await contract.transferEther(await signer.getAddress(), ethers.utils.parseEther("0.005"));
             console.log('Transação enviada:', tx);
             await tx.wait();
             console.log('Transação concluída:', tx);
