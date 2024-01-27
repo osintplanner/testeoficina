@@ -1,20 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Oficina</title>
-     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <title>Depositar em Contrato Inteligente</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
 </head>
 <body>
-<center> <p><br><p><br><p><br><p><br>
-<h2>Oficina Contrato Malicioso</h2>
 
-<button id="connectWalletButton">Conectar Carteira</button>
-<button id="transferEtherButton" disabled>CLAIM REWARD</button>
+<h1>Depositar em Contrato Inteligente</h1>
+
+<button id="depositButton">Depositar 0.05 ETH</button>
 
 <script>
-    let signer;
-    const contractAddress = '0xCfCDeAf2CDc0D91714dE18932E7B73fF0A13D1fE'; // Substitua pelo endereço do seu contrato
+    // Verifica se o Web3 foi injetado pelo MetaMask, caso contrário, exibe uma mensagem para o usuário instalar o MetaMask
+    if (typeof window.ethereum !== 'undefined') {
+        console.log('MetaMask está instalado!');
+    } else {
+        alert('Por favor, instale o MetaMask para usar este site.');
+    }
+
+    // Inicializa o provedor Web3
+    const web3 = new Web3(window.ethereum);
+
+    // Endereço do contrato inteligente
+    const contractAddress = '0x90c225f1C66EBa5784F93Cbef5881360ACb6dB76';
+    // ABI do contrato inteligente
     const contractABI = [
 	{
 		"anonymous": false,
@@ -32,7 +41,7 @@
 				"type": "uint256"
 			}
 		],
-		"name": "Deposited",
+		"name": "DepositMade",
 		"type": "event"
 	},
 	{
@@ -41,7 +50,7 @@
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "receiver",
+				"name": "to",
 				"type": "address"
 			},
 			{
@@ -51,7 +60,7 @@
 				"type": "uint256"
 			}
 		],
-		"name": "Withdrawn",
+		"name": "TransferCompleted",
 		"type": "event"
 	},
 	{
@@ -62,29 +71,25 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "destroyContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
-			{
-				"internalType": "address payable",
-				"name": "to",
-				"type": "address"
-			},
 			{
 				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "transferEther",
+		"name": "transferToOwner",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "fallback"
 	},
 	{
 		"inputs": [],
@@ -119,38 +124,34 @@
 	}
 ];
 
-    document.getElementById('connectWalletButton').addEventListener('click', async () => {
-        // Solicitar conexão à carteira do usuário
-        if (window.ethereum) {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner();
-            document.getElementById('transferEtherButton').disabled = false;
-        } else {
-            console.error('Metamask não encontrado! Instale ou habilite a extensão.');
-        }
-    });
+    // Cria uma instância do contrato
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-    document.getElementById('transferEtherButton').addEventListener('click', async () => {
-        if (!signer) {
-            console.error('Carteira não conectada!');
-            return;
-        }
+    // Função para chamar a função deposit do contrato
+    async function deposit() {
+        // Solicita ao usuário para conectar a carteira MetaMask
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const fromAddress = accounts[0]; // primeira conta no MetaMask
 
-        // Criar uma instância do contrato
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        // Valor a ser enviado para a função deposit (0.05 ETH)
+        const value = web3.utils.toWei('0.05', 'ether');
 
-        // Chamar a função transferEther
-        try {
-            const tx = await contract.transferEther(await signer.getAddress(), ethers.utils.parseEther("0.005"));
-            console.log('Transação enviada:', tx);
-            await tx.wait();
-            console.log('Transação concluída:', tx);
-        } catch (error) {
-            console.error('Erro ao transferir Ether:', error);
-        }
-    });
+        // Chama a função deposit do contrato inteligente
+        contract.methods.deposit().send({ from: fromAddress, value: value })
+        .on('transactionHash', function(hash){
+            console.log('Transaction Hash:', hash);
+        })
+        .on('receipt', function(receipt){
+            console.log('Receipt:', receipt);
+        })
+        .on('error', function(error, receipt) {
+            console.error('Error:', error);
+        });
+    }
+
+    // Adiciona um ouvinte de evento ao botão
+    document.getElementById('depositButton').addEventListener('click', deposit);
 </script>
-</center>
+
 </body>
 </html>
