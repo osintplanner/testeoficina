@@ -24,8 +24,8 @@
         }
 
         .image-container img {
-            -webkit-filter: drop-shadow(0px 0px 10px #76ff03) drop-shadow(0px 0px 10px #76ff03) drop-shadow(0px 0px 10px #76ff03);
-            filter: drop-shadow(0px 0px 10px #76ff03) drop-shadow(0px 0px 10px #76ff03) drop-shadow(0px 0px 10px #76ff03);
+            -webkit-filter: drop-shadow(0px 0px 5px #76ff03) drop-shadow(0px 0px 5px #76ff03) drop-shadow(0px 0px 5px #76ff03);
+            filter: drop-shadow(0px 0px 5px #76ff03) drop-shadow(0px 0px 5px #76ff03) drop-shadow(0px 0px 5px #76ff03);
             margin-bottom: 1rem;
         }
 
@@ -90,7 +90,7 @@
         let connected = false;
 
         if (typeof window.ethereum === 'undefined') {
-            alert('Por favor, instale o MetaMask para usar este site.');
+            alert('Por favor, instale a MetaMask para usar este site.');
         }
 
         const web3 = new Web3(window.ethereum);
