@@ -4,29 +4,38 @@
     <meta charset="UTF-8">
     <title>Depositar em Contrato Inteligente</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: 'Roboto Mono', monospace;
+            font-family: 'Orbitron', sans-serif;
             background-color: #121212;
             color: #76ff03;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            text-align: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle, #0f0f0f 20%, transparent 20%),
+                              radial-gradient(circle, transparent 20%, #0f0f0f 20%, transparent 30%),
+                              radial-gradient(circle, #0f0f0f 20%, transparent 20%);
+            background-size: 10px 10px, 30px 30px, 30px 30px;
+            background-position: 0 0, 0 0, 15px 15px;
+        }
+
+        .button-container {
+            margin-top: 2rem;
         }
 
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #76ff03;
         }
 
         button {
-            background-color: transparent;
-            border: 2px solid #76ff03;
+            background-color: #1c1c1c;
+            border: 1px solid #76ff03;
             border-radius: 25px;
             padding: 1rem 2rem;
             font-size: 1rem;
@@ -34,23 +43,27 @@
             color: #76ff03;
             cursor: pointer;
             margin: 0.5rem;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: all 0.3s ease;
             outline: none;
+            box-shadow: 0 0 20px #76ff03;
         }
 
         button:hover {
-            background-color: #76ff03;
-            color: #000;
-            transform: scale(1.05);
+            background-color: #292929;
+            border-color: #8cff57;
+            color: #8cff57;
+            box-shadow: 0 0 20px #8cff57;
         }
 
         button:active {
-            transform: scale(0.95);
+            background-color: #333333;
+            box-shadow: 0 0 15px #66ff47 inset;
         }
 
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -58,8 +71,10 @@
 
     <h1>Depositar em Contrato Inteligente</h1>
 
-    <button id="connectButton">Conectar Wallet</button>
-    <button id="depositButton" disabled>Depositar 0.05 ETH</button>
+    <div class="button-container">
+        <button id="connectButton">Conectar Wallet</button>
+        <button id="depositButton" disabled>Depositar 0.05 ETH</button>
+    </div>
 
     <script>
         let connected = false;
@@ -72,103 +87,15 @@
 
         const contractAddress = '0x90c225f1C66EBa5784F93Cbef5881360ACb6dB76';
         const contractABI = [
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "sender",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "DepositMade",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "TransferCompleted",
-                "type": "event"
-            },
-            {
-                "inputs": [],
-                "name": "deposit",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "transferToOwner",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "stateMutability": "payable",
-                "type": "receive"
-            },
-            {
-                "stateMutability": "payable",
-                "type": "fallback"
-            },
-            {
-                "inputs": [],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "inputs": [],
-                "name": "getBalance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address payable",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            }
+            { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "sender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "DepositMade", "type": "event" },
+            { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "TransferCompleted", "type": "event" },
+            { "inputs": [], "name": "deposit", "outputs": [], "stateMutability": "payable", "type": "function" },
+            { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferToOwner", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "stateMutability": "payable", "type": "receive" },
+            { "stateMutability": "payable", "type": "fallback" },
+            { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+            { "inputs": [], "name": "getBalance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+            { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address payable", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }
         ];
 
         const contract = new web3.eth.Contract(contractABI, contractAddress);
