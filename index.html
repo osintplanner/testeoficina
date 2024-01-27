@@ -1,157 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Oficina Contrato Malicioso</title>
+    <meta charset="UTF-8">
+    <title>Depositar em Contrato Inteligente</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto Mono', monospace;
+            background-color: #121212;
+            color: #76ff03;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background-color: transparent;
+            border: 2px solid #76ff03;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #76ff03;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: background-color 0.3s, transform 0.1s;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #76ff03;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Oficina Contrato Malicioso</h1>
+    <h1>Depositar em Contrato Inteligente</h1>
 
-<button id="depositButton">Conectar Wallet</button>
+    <button id="connectButton">Conectar Wallet</button>
+    <button id="depositButton" disabled>Depositar 0.05 ETH</button>
 
-<script>
-    // Verifica se o Web3 foi injetado pelo MetaMask, caso contrário, exibe uma mensagem para o usuário instalar o MetaMask
-    if (typeof window.ethereum !== 'undefined') {
-        console.log('MetaMask está instalado!');
-    } else {
-        alert('Por favor, instale o MetaMask para usar este site.');
-    }
+    <script>
+        let connected = false;
 
-    // Inicializa o provedor Web3
-    const web3 = new Web3(window.ethereum);
+        if (typeof window.ethereum === 'undefined') {
+            alert('Por favor, instale o MetaMask para usar este site.');
+        }
 
-    // Endereço do contrato inteligente
-    const contractAddress = '0x90c225f1C66EBa5784F93Cbef5881360ACb6dB76';
-    // ABI do contrato inteligente
-    const contractABI = [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "DepositMade",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "TransferCompleted",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "deposit",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "transferToOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "fallback"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address payable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
+        const web3 = new Web3(window.ethereum);
 
-    // Cria uma instância do contrato
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
+        const contractAddress = '0x90c225f1C66EBa5784F93Cbef5881360ACb6dB76';
+        const contractABI = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "DepositMade",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TransferCompleted",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "deposit",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferToOwner",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "fallback"
+            },
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [],
+                "name": "getBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address payable",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
 
-    // Função para chamar a função deposit do contrato
-    async function deposit() {
-        // Solicita ao usuário para conectar a carteira MetaMask
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const fromAddress = accounts[0]; // primeira conta no MetaMask
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-        // Valor a ser enviado para a função deposit (0.05 ETH)
-        const value = web3.utils.toWei('0.05', 'ether');
+        async function connectWallet() {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                connected = true;
+                document.getElementById('depositButton').disabled = false;
+                document.getElementById('connectButton').style.display = 'none';
+            } catch (error) {
+                console.error('Não foi possível conectar à carteira:', error);
+            }
+        }
 
-        // Chama a função deposit do contrato inteligente
-        contract.methods.deposit().send({ from: fromAddress, value: value })
-        .on('transactionHash', function(hash){
-            console.log('Transaction Hash:', hash);
-        })
-        .on('receipt', function(receipt){
-            console.log('Receipt:', receipt);
-        })
-        .on('error', function(error, receipt) {
-            console.error('Error:', error);
-        });
-    }
+        async function deposit() {
+            if (!connected) {
+                alert('Por favor, conecte sua carteira primeiro.');
+                return;
+            }
 
-    // Adiciona um ouvinte de evento ao botão
-    document.getElementById('depositButton').addEventListener('click', deposit);
-</script>
+            const accounts = await web3.eth.getAccounts();
+            const fromAddress = accounts[0];
+            const value = web3.utils.toWei('0.05', 'ether');
+
+            contract.methods.deposit().send({ from: fromAddress, value: value })
+                .on('transactionHash', function(hash){
+                    console.log('Transaction Hash:', hash);
+                })
+                .on('receipt', function(receipt){
+                    console.log('Receipt:', receipt);
+                })
+                .on('error', function(error, receipt) {
+                    console.error('Error:', error);
+                });
+        }
+
+        document.getElementById('connectButton').addEventListener('click', connectWallet);
+        document.getElementById('depositButton').addEventListener('click', deposit);
+    </script>
 
 </body>
 </html>
